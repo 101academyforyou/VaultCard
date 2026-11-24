@@ -54,18 +54,22 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: 安裝套件並同步網頁檔案到 iOS 專案
-        run: |
-          npm ci
-          node scripts/build-www.mjs
-          npx cap sync ios
-
       - name: 準備 App Store Connect API 金鑰
         run: |
           mkdir -p "$RUNNER_TEMP/keys"
           KEY_PATH="$RUNNER_TEMP/keys/AuthKey_${ASC_KEY_ID}.p8"
           printf '%s\n' "$ASC_KEY_P8" > "$KEY_PATH"
           echo "KEY_PATH=$KEY_PATH" >> "$GITHUB_ENV"
+
+      # 先確認金鑰能通過 Apple 驗證，失敗時直接說明原因（不用等打包完才發現）
+      - name: 檢查 API 金鑰
+        run: node scripts/check-asc-key.mjs
+
+      - name: 安裝套件並同步網頁檔案到 iOS 專案
+        run: |
+          npm ci
+          node scripts/build-www.mjs
+          npx cap sync ios
 
       # 先打包「不簽署」的版本：開發用描述檔需要註冊測試裝置，這裡用不到。
       # 簽署交給下一步匯出時，用 App Store 發佈憑證自動處理（不需要任何裝置）。
