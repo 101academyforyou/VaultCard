@@ -214,7 +214,7 @@
         ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
         ctx.shadowBlur = 0;
         if (n.kind === 'ghost') { ctx.strokeStyle = '#888'; ctx.setLineDash([2, 2]); ctx.stroke(); ctx.setLineDash([]); }
-        if (cam.k > 0.6 || n === focus || n.kind === 'hub') {
+        if (cam.k > 0.5 || n === focus || n.kind === 'hub') {
           ctx.fillStyle = dim ? '#666' : n.kind === 'hub' ? '#e9e3ff' : '#cfcfcf';
           ctx.font = (n.kind === 'hub' ? '600 13px ' : '12px ') + getComputedStyle(document.body).fontFamily;
           ctx.textAlign = 'center';
