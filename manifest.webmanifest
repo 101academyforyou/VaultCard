@@ -1,0 +1,19 @@
+{
+  "name": "VaultCard · 用 Obsidian 的方式經營人脈",
+  "short_name": "VaultCard",
+  "description": "Obsidian 風格的社交名片：掃 QR 交換名片，把人脈存成 Markdown 筆記，用雙向連結與圖譜看見你的人際網路。",
+  "lang": "zh-Hant",
+  "start_url": "./#/",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1a1a1a",
+  "theme_color": "#1a1a1a",
+  "categories": ["social", "productivity", "business"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

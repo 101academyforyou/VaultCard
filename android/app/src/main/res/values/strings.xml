@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">VaultCard</string>
+    <string name="title_activity_main">VaultCard</string>
+    <string name="package_name">app.vaultcard.card</string>
+    <string name="custom_url_scheme">app.vaultcard.card</string>
+</resources>

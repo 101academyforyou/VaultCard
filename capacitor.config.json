@@ -1,0 +1,20 @@
+{
+  "appId": "app.vaultcard.card",
+  "appName": "VaultCard",
+  "webDir": "www",
+  "backgroundColor": "#1a1a1a",
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#1a1a1a"
+  },
+  "android": {
+    "backgroundColor": "#1a1a1a"
+  },
+  "plugins": {
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#1a1a1a",
+      "overlaysWebView": true
+    }
+  }
+}
