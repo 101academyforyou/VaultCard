@@ -2,7 +2,10 @@
 
 直接複製到 App Store Connect 對應欄位。括號內是 Apple 的字數上限。
 
-截圖在 `assets/appstore/iphone-6.9/`（1320 × 2868，6.9 吋 iPhone），依檔名順序上傳。
+截圖依檔名順序上傳：
+
+- `assets/appstore/iphone-6.9/`：1320 × 2868，6.9 吋 iPhone
+- `assets/appstore/iphone-6.3/`：1206 × 2622，6.1／6.3 吋 iPhone（App Store Connect「配備動態島的 iPhone（中型顯示器）」欄位）
 
 ---
 
