@@ -11,7 +11,7 @@
   global.Connect = function (api) {
     const { $, $$, esc, icon, toast, haptic, setTitle, makeGraph, setCleanup, native } = api;
     const KEY = 'vaultcard:v1';
-    const SITE = global.VAULTCARD_SITE || 'https://101academyforyou.github.io/vaultcard/';
+    const SITE = global.VAULTCARD_SITE || 'https://vaultcard.onepointzeroone.org/';
     const COLORS = ['#8a5cf5', '#60a5fa', '#4ade80', '#f59e0b', '#f472b6'];
     const MAX = { n: 40, t: 40, o: 60, b: 200, tag: 24, tags: 8, link: 120 };
 

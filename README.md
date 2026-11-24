@@ -4,7 +4,7 @@
 
 VaultCard 是 Obsidian 風格的社交名片 App + 網頁：掃 QR 交換名片，把認識的人存成 Markdown 人脈筆記，用 `[[雙向連結]]`、`#標籤` 和關係圖譜看見你的人際網路，最後整包匯出成 Obsidian Vault。
 
-- 🌐 網頁版（開啟 GitHub Pages 後）：https://101academyforyou.github.io/vaultcard/
+- 🌐 網頁版：https://vaultcard.onepointzeroone.org/
 - 📱 同一份程式碼用 Capacitor 打包成 **iOS / Android App**
 - 🔒 不用註冊、沒有伺服器：名片資料直接放在分享連結裡，人脈只存在你的裝置
 
@@ -70,7 +70,7 @@ npm run android   # 需要 Android Studio
 
 ## 網頁版部署
 
-推送到 `main` 後由 GitHub Actions 自動部署到 GitHub Pages。第一次設定與自訂網域請看 [docs/DEPLOY.md](docs/DEPLOY.md)。
+推送到 `main` 後由 GitHub Actions 自動部署到 GitHub Pages（自訂網域 `vaultcard.onepointzeroone.org`）。第一次設定（DNS、HTTPS）請看 [docs/DEPLOY.md](docs/DEPLOY.md)。
 
 ## 專案結構
 
@@ -81,6 +81,7 @@ manifest.webmanifest   PWA 設定
 sw.js                  離線快取
 css/style.css          Obsidian 風格紫黑色主題與響應式版面
 js/config.js           網頁版正式網址（分享連結用）
+CNAME                  GitHub Pages 自訂網域
 js/markdown.js         支援 Obsidian 語法的輕量 Markdown 轉換器
 js/vaultcard.js        名片編碼 / QR、人脈筆記、圖譜資料、Vault / vCard / .md 匯出
 js/app.js              外框、路由、歡迎頁、力導向圖譜引擎
