@@ -1,0 +1,23 @@
+{
+  "name": "vaultcard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "VaultCard：Obsidian 風格的社交名片 App 與網頁",
+  "scripts": {
+    "serve": "python3 -m http.server 8000",
+    "build": "node scripts/build-www.mjs",
+    "sync": "npm run build && npx cap sync",
+    "ios": "npm run sync && npx cap open ios",
+    "android": "npm run sync && npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/haptics": "^8.0.0",
+    "@capacitor/ios": "^8.0.0",
+    "@capacitor/status-bar": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.0.0"
+  }
+}
