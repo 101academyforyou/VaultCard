@@ -4,7 +4,7 @@
 
 VaultCard 是 Obsidian 風格的社交名片 App + 網頁：掃 QR 交換名片，把認識的人存成 Markdown 人脈筆記，用 `[[雙向連結]]`、`#標籤` 和關係圖譜看見你的人際網路，最後整包匯出成 Obsidian Vault。
 
-- 🌐 網頁版：https://vaultcard.onepointzeroone.org/
+- 🌐 介紹頁：https://vaultcard.onepointzeroone.org/ ・網頁版 App：https://vaultcard.onepointzeroone.org/app/
 - 📱 同一份程式碼用 Capacitor 打包成 **iOS / Android App**
 - 🔒 不用註冊、沒有伺服器：名片資料直接放在分享連結裡，人脈只存在你的裝置
 
@@ -39,6 +39,20 @@ VaultCard 人脈 Vault 2026-11-24.zip
 
 名片資料 → JSON → `deflate-raw` 壓縮 → base64url，放在網址 `#/c/` 後面。`#` 之後的內容瀏覽器不會送到伺服器，所以名片不經過任何後端。打開連結時會驗證、清理所有欄位（長度、型別、只允許安全的連結格式）。
 
+## 介紹頁與使用人數
+
+網站首頁是介紹頁（`site/`），App 在 `/app/`。舊的名片連結（`/#/c/…`）會自動轉到 `/app/`，不會失效。
+
+首頁的「已有 N 人在用」和 App Store 按鈕讀取 `site/stats.json`，**手動維護**（App 本身不蒐集任何資料）：
+
+```json
+{ "users": 1280, "appStoreUrl": "https://apps.apple.com/app/id0000000000", "updated": "2026-12-01" }
+```
+
+- `users` 是 0 時顯示「剛上線，歡迎成為第一批使用者」
+- `appStoreUrl` 是空字串時顯示「App Store 即將上架」（只接受 `https://apps.apple.com/` 開頭的網址）
+- 數字可以參考 App Store Connect →「分析」的下載數；改完合併到 `main` 就會自動部署
+
 ## 本機執行
 
 純 HTML / CSS / JavaScript，不需要建置：
@@ -47,7 +61,15 @@ VaultCard 人脈 Vault 2026-11-24.zip
 python3 -m http.server 8000
 ```
 
-打開 <http://localhost:8000>。
+打開 <http://localhost:8000> 是 App 本身。要預覽整個網站（介紹頁＋`/app/`）：
+
+```bash
+node scripts/build-site.mjs
+```
+
+```bash
+python3 -m http.server 8000 -d _site
+```
 
 ## 打包成 App
 
@@ -70,12 +92,13 @@ npm run android   # 需要 Android Studio
 
 ## 網頁版部署
 
-推送到 `main` 後由 GitHub Actions 自動部署到 GitHub Pages（自訂網域 `vaultcard.onepointzeroone.org`）。第一次設定（DNS、HTTPS）請看 [docs/DEPLOY.md](docs/DEPLOY.md)。
+推送到 `main` 後，GitHub Actions 用 `scripts/build-site.mjs` 組出介紹頁＋`/app/`，自動部署到 GitHub Pages（自訂網域 `vaultcard.onepointzeroone.org`）。第一次設定（DNS、HTTPS）請看 [docs/DEPLOY.md](docs/DEPLOY.md)。
 
 ## 專案結構
 
 ```
-index.html             入口
+index.html             App 入口（網站上在 /app/，也是 iOS / Android App 的內容）
+site/                  介紹頁：index.html、stats.json（使用人數）、img/、sw.js（清除舊版快取）
 privacy.html           隱私權政策（上架必填）
 manifest.webmanifest   PWA 設定
 sw.js                  離線快取
@@ -88,7 +111,9 @@ js/app.js              外框、路由、歡迎頁、力導向圖譜引擎
 js/vendor/qrcode.js    QR Code 產生器（Kazuhiko Arase，MIT）
 icons/  assets/        網頁 / App 圖示、商店圖示、啟動畫面
 capacitor.config.json  App 設定（App ID、名稱）
-scripts/build-www.mjs  把網頁複製到 www/ 給 App 打包與 Pages 部署
+scripts/build-www.mjs  把 App 複製到 www/ 給 Capacitor 打包
+scripts/build-site.mjs 組出網站到 _site/（介紹頁 + /app/ + privacy.html）給 Pages 部署
+scripts/check-asc-key.mjs  iOS 打包前檢查 App Store Connect API 金鑰
 ios/  android/         原生 App 專案（Capacitor 產生）
 ```
 
