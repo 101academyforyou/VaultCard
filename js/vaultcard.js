@@ -191,6 +191,8 @@
         const cnt = $('[data-count="b"]', f); if (cnt) cnt.textContent = (f.elements.b.value.length) + '/' + MAX.b;
         clearTimeout(timer);
         timer = setTimeout(async () => {
+          const prev = db.me && db.me.n;
+          if (prev && c.n && prev !== c.n) renameLinks(prev, c.n);
           db.me = c.n ? c : null; save();
           const mySeq = ++seq;
           const box = $('#cx-share'); if (!box) return;
@@ -226,7 +228,7 @@ ${canScan() ? `<button class="btn cx-scan-btn" data-a="scan">${t('📷 掃描對
       f.addEventListener('input', upd);
       f.addEventListener('change', upd);
       upd();
-      setCleanup(() => { clearTimeout(timer); const c = readForm(f); db.me = c.n ? c : null; save(); });
+      setCleanup(() => { clearTimeout(timer); const c = readForm(f); const prev = db.me && db.me.n; if (prev && c.n && prev !== c.n) renameLinks(prev, c.n); db.me = c.n ? c : null; save(); });
     }
 
     /* ---------------- 收到名片 ---------------- */
@@ -454,8 +456,9 @@ ${Object.keys(tags).length ? `<div class="cx-chips">${Object.entries(tags).sort(
       const names = new Set(db.people.map((p) => p.card.n)); if (db.me) names.add(db.me.n);
       return { resolve: (n) => names.has(n), embed: () => null };
     }
-    function renamePerson(p, n) {
-      const old = p.card.n; if (!n || n === old) return;
+    function renamePerson(p, n) { renameLinks(p.card.n, n); }
+    function renameLinks(old, n) {
+      if (!old || !n || n === old) return;
       const re = new RegExp('\\[\\[' + old.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(\\]\\]|\\||#)', 'g');
       db.people.forEach((o) => { if (o.note) o.note = o.note.replace(re, '[[' + n + '$1'); });
     }
@@ -551,7 +554,7 @@ ${Object.keys(tags).length ? `<div class="cx-chips">${Object.entries(tags).sort(
   <div class="segmented" role="tablist"><button class="on" data-m="all">${t('全部')}</button><button data-m="people">${t('只看人')}</button></div>
 </div>
 <div class="graph-wrap"><canvas id="graph"></canvas>
-  <div class="graph-legend"><span><i style="background:#c4b5fd"></i>${t('我')}</span><span><i style="background:#8a5cf5;box-shadow:0 0 6px #8a5cf5"></i>${t('人脈')}</span><span><i style="background:#facc15"></i>${t('活動')}</span><span><i style="background:#4ade80"></i>${t('標籤')}</span><span><i style="background:#555;border:1px dashed #888"></i>${t('提到但還沒存')}</span></div>
+  <div class="graph-legend"><span><i style="background:#c4b5fd"></i>${t('我')}</span><span><i style="background:#8a5cf5;box-shadow:0 0 6px #8a5cf5"></i>${t('人脈')}</span><span><i style="background:#facc15"></i>${t('活動')}</span><span><i style="background:#60a5fa"></i>${t('公司 / 組織')}</span><span><i style="background:#4ade80"></i>${t('標籤')}</span><span><i style="background:#555;border:1px dashed #888"></i>${t('提到但還沒存')}</span></div>
   <div class="graph-tip" id="graph-hover"></div>
 </div>
 ${db.people.length ? '' : '<div class="tip" style="margin-top:16px"><span class="tip-title">' + t('💡 圖譜還是空的') + '</span>' + t('先到「人脈」存幾張名片，或在筆記裡寫 [[名字]]，網路就會慢慢長出來。') + '</div>'}`;
@@ -569,9 +572,15 @@ ${db.people.length ? '' : '<div class="tip" style="margin-top:16px"><span class=
       const pid = {}; db.people.forEach((p) => { pid[p.card.n] = 'p:' + p.id; });
       if (db.me) pid[db.me.n] = ME;
       db.people.forEach((p) => add('p:' + p.id, { label: p.card.n, kind: 'done', href: '#/people/' + encodeURIComponent(p.id) }));
+      const org = (name) => add('o:' + name.toLowerCase(), { label: '🏢 ' + name, kind: 'org', r: 8 });
+      if (db.me && full) {
+        (db.me.g || []).forEach((tg) => link(ME, add('t:' + tg, { label: '#' + tg, kind: 'tag', r: 5 }), true));
+        if (db.me.o) link(ME, org(db.me.o), true);
+      }
       db.people.forEach((p) => {
         const me = 'p:' + p.id;
         link(ME, me, false);
+        if (full && p.card.o) link(me, org(p.card.o), true);
         ((p.note || '').match(/\[\[([^\]|#]+)/g) || []).forEach((m) => {
           const n = m.slice(2).trim(); if (!n) return;
           link(me, pid[n] || add('g:' + n, { label: n, kind: 'ghost' }), false);
@@ -580,7 +589,7 @@ ${db.people.length ? '' : '<div class="tip" style="margin-top:16px"><span class=
         if (full) allTags(p).forEach((t) => link(me, add('t:' + t, { label: '#' + t, kind: 'tag', r: 5 }), true));
       });
       const deg = {}; links.forEach((l) => { deg[l.s] = (deg[l.s] || 0) + 1; deg[l.t] = (deg[l.t] || 0) + 1; });
-      nodes.forEach((n) => { if (n.kind === 'done') n.r = 6 + Math.min(6, deg[n.id] || 0); if (n.kind === 'event') n.r = 6 + Math.min(6, deg[n.id] || 0); });
+      nodes.forEach((n) => { if (n.kind === 'done') n.r = 6 + Math.min(6, deg[n.id] || 0); if (n.kind === 'event' || n.kind === 'org') n.r = 6 + Math.min(6, deg[n.id] || 0); });
       return { nodes: Array.from(nodes.values()), links };
     }
 

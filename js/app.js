@@ -211,6 +211,7 @@
         else if (n.kind === 'ghost') fill = '#4a4a4a';
         else if (n.kind === 'tag') fill = '#4ade80';
         else if (n.kind === 'event') fill = '#facc15';
+        else if (n.kind === 'org') fill = '#60a5fa';
         ctx.globalAlpha = dim ? 0.2 : 1;
         if ((n.kind === 'done' || n.kind === 'hub' || n === focus) && !dim) { ctx.shadowColor = '#8a5cf5'; ctx.shadowBlur = n === focus ? 22 : 12; }
         ctx.fillStyle = n === focus ? '#d8ccff' : fill;

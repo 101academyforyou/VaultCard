@@ -116,7 +116,7 @@
     // 圖譜
     '🕸️ 人脈圖譜': '🕸️ Network Graph',
     '中心是你，每個點是一位人脈。筆記裡的 [[連結]]、共同的活動與標籤，會把人串在一起。': "You're at the center and each dot is a contact. [[Links]] in notes, shared events and tags connect people.",
-    '全部': 'All', '只看人': 'People only', '活動': 'Events', '標籤': 'Tags', '提到但還沒存': 'Mentioned, not saved',
+    '全部': 'All', '只看人': 'People only', '活動': 'Events', '公司 / 組織': 'Organizations', '標籤': 'Tags', '提到但還沒存': 'Mentioned, not saved',
     '💡 圖譜還是空的': '💡 Your graph is empty', '先到「人脈」存幾張名片，或在筆記裡寫 [[名字]]，網路就會慢慢長出來。': 'Save a few cards in Contacts, or write [[name]] in a note, and your network will start to grow.',
 
     // 匯出與分享
