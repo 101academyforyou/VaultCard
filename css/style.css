@@ -484,7 +484,7 @@ button.bc-tag.on { border-color: var(--accent-2); background: var(--accent); col
 .how .n { font-size: 26px; }
 .settings-list { display: flex; flex-direction: column; gap: 12px; }
 @media (max-width: 900px) {
-  .topbar { height: var(--topbar-h); padding-top: 0; padding-bottom: 0; }
+  .topbar { height: calc(var(--topbar-h) + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); padding-bottom: 0; }
   .bottom-nav { height: calc(var(--bnav-h) + env(safe-area-inset-bottom)); padding-top: 4px; padding-bottom: env(safe-area-inset-bottom); align-items: stretch; }
   .how { grid-template-columns: 1fr; }
 }
