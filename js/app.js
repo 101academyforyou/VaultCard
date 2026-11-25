@@ -33,8 +33,8 @@
   const logo = () => '<img src="icons/icon.svg" alt="" style="width:100%;height:100%;display:block">';
 
   const NAV = [
-    { r: '/card', label: '我的名片', short: '名片', ico: 'card' },
     { r: '/settings', label: '設定與資料', short: '設定', ico: 'settings' },
+    { r: '/card', label: '我的名片', short: '名片', ico: 'card' },
     { r: '/network', label: '人脈圖譜', short: '圖譜', ico: 'graph' },
     { r: '/people', label: '人脈', short: '人脈', ico: 'people' }
   ];
