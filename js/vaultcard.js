@@ -554,12 +554,21 @@ ${Object.keys(tags).length ? `<div class="cx-chips">${Object.entries(tags).sort(
   <div class="segmented" role="tablist"><button class="on" data-m="all">${t('全部')}</button><button data-m="people">${t('只看人')}</button></div>
 </div>
 <div class="graph-wrap"><canvas id="graph"></canvas>
-  <div class="graph-legend"><span><i style="background:#c4b5fd"></i>${t('我')}</span><span><i style="background:#8a5cf5;box-shadow:0 0 6px #8a5cf5"></i>${t('人脈')}</span><span><i style="background:#facc15"></i>${t('活動')}</span><span><i style="background:#60a5fa"></i>${t('公司 / 組織')}</span><span><i style="background:#4ade80"></i>${t('標籤')}</span><span><i style="background:#555;border:1px dashed #888"></i>${t('提到但還沒存')}</span></div>
+  <div class="graph-legend"><span><i style="background:#c4b5fd"></i>${t('我')}</span><span><i style="background:#8a5cf5;box-shadow:0 0 6px #8a5cf5"></i>${t('人脈')}</span><span data-k="all"><i style="background:#facc15"></i>${t('活動')}</span><span data-k="all"><i style="background:#60a5fa"></i>${t('公司 / 組織')}</span><span data-k="all"><i style="background:#4ade80"></i>${t('標籤')}</span><span data-k="people" hidden><i class="lg-dash"></i>${t('有共同點')}</span><span><i style="background:#555;border:1px dashed #888"></i>${t('提到但還沒存')}</span></div>
   <div class="graph-tip" id="graph-hover"></div>
 </div>
+<p class="faint graph-hint" id="graph-hint"></p>
 ${db.people.length ? '' : '<div class="tip" style="margin-top:16px"><span class="tip-title">' + t('💡 圖譜還是空的') + '</span>' + t('先到「人脈」存幾張名片，或在筆記裡寫 [[名字]]，網路就會慢慢長出來。') + '</div>'}`;
       const g = makeGraph($('#graph'));
-      const setMode = (m) => { $$('.segmented button', v).forEach((b) => b.classList.toggle('on', b.dataset.m === m)); g.load(networkGraph(m === 'all')); };
+      const setMode = (m) => {
+        $$('.segmented button', v).forEach((b) => b.classList.toggle('on', b.dataset.m === m));
+        const data = networkGraph(m === 'all'); g.load(data);
+        $$('.graph-legend [data-k]', v).forEach((el) => { el.hidden = el.dataset.k !== m; });
+        let hint = '';
+        if (m === 'people') hint = t('「只看人」只顯示人：實線是你和人脈、以及筆記裡的 [[連結]]；虛線代表兩個人有共同的活動、標籤或公司。') + (db.people.length > 1 && !data.shared ? ' ' + t('目前人脈之間還沒有共同點。') : '');
+        else if (db.people.length && !data.attrs) hint = t('「全部」會另外顯示活動、標籤和公司，但目前你的名片和人脈都還沒有這些資料。在人脈筆記填「在哪裡認識」、加上 #標籤，或在名片填上公司，就會出現在這裡。');
+        $('#graph-hint').textContent = hint;
+      };
       $$('.segmented button', v).forEach((b) => b.addEventListener('click', () => setMode(b.dataset.m)));
       setMode('all');
       setCleanup(g.destroy);
@@ -588,9 +597,29 @@ ${db.people.length ? '' : '<div class="tip" style="margin-top:16px"><span class=
         if (full && p.met && p.met.w) link(me, add('w:' + p.met.w, { label: '📍 ' + p.met.w, kind: 'event', r: 8 }), true);
         if (full) allTags(p).forEach((t) => link(me, add('t:' + t, { label: '#' + t, kind: 'tag', r: 5 }), true));
       });
+      // 只看人：不畫活動／標籤／公司節點，改成在有共同點的兩個人之間畫虛線
+      let shared = 0;
+      if (!full) {
+        const groups = {};
+        const put = (k, id) => { (groups[k] = groups[k] || new Set()).add(id); };
+        db.people.forEach((p) => {
+          const id = 'p:' + p.id;
+          if (p.met && p.met.w) put('w:' + p.met.w, id);
+          if (p.card.o) put('o:' + p.card.o.toLowerCase(), id);
+          allTags(p).forEach((tg) => put('t:' + tg, id));
+        });
+        Object.values(groups).forEach((set) => {
+          const ids = Array.from(set); if (ids.length < 2) return;
+          const before = links.length;
+          if (ids.length <= 6) { for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) link(ids[i], ids[j], true); }
+          else ids.forEach((id, i) => link(id, ids[(i + 1) % ids.length], true)); // 人很多時連成一圈，避免線太多
+          shared += links.length - before;
+        });
+      }
       const deg = {}; links.forEach((l) => { deg[l.s] = (deg[l.s] || 0) + 1; deg[l.t] = (deg[l.t] || 0) + 1; });
       nodes.forEach((n) => { if (n.kind === 'done') n.r = 6 + Math.min(6, deg[n.id] || 0); if (n.kind === 'event' || n.kind === 'org') n.r = 6 + Math.min(6, deg[n.id] || 0); });
-      return { nodes: Array.from(nodes.values()), links };
+      const attrs = Array.from(nodes.values()).filter((n) => n.kind === 'event' || n.kind === 'org' || n.kind === 'tag').length;
+      return { nodes: Array.from(nodes.values()), links, attrs, shared };
     }
 
     /* ---------------- 匯出：Markdown / vCard / Vault ---------------- */

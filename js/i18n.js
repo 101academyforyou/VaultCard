@@ -116,7 +116,11 @@
     // 圖譜
     '🕸️ 人脈圖譜': '🕸️ Network Graph',
     '中心是你，每個點是一位人脈。筆記裡的 [[連結]]、共同的活動與標籤，會把人串在一起。': "You're at the center and each dot is a contact. [[Links]] in notes, shared events and tags connect people.",
-    '全部': 'All', '只看人': 'People only', '活動': 'Events', '公司 / 組織': 'Organizations', '標籤': 'Tags', '提到但還沒存': 'Mentioned, not saved',
+    '全部': 'All', '只看人': 'People only', '活動': 'Events', '公司 / 組織': 'Organizations', '有共同點': 'Shared event/tag/company',
+    '「只看人」只顯示人：實線是你和人脈、以及筆記裡的 [[連結]]；虛線代表兩個人有共同的活動、標籤或公司。': '“People only” shows just people: solid lines connect you to contacts and follow [[links]] in notes; dashed lines mean two people share an event, tag or company.',
+    '目前人脈之間還沒有共同點。': 'Your contacts don’t share anything yet.',
+    '「全部」會另外顯示活動、標籤和公司，但目前你的名片和人脈都還沒有這些資料。在人脈筆記填「在哪裡認識」、加上 #標籤，或在名片填上公司，就會出現在這裡。': '“All” also shows events, tags and companies, but your card and contacts don’t have any yet. Add “Where you met”, #tags or a company and they’ll show up here.',
+    '標籤': 'Tags', '提到但還沒存': 'Mentioned, not saved',
     '💡 圖譜還是空的': '💡 Your graph is empty', '先到「人脈」存幾張名片，或在筆記裡寫 [[名字]]，網路就會慢慢長出來。': 'Save a few cards in Contacts, or write [[name]] in a note, and your network will start to grow.',
 
     // 匯出與分享
