@@ -128,7 +128,8 @@
       .grid { grid-template-columns: 1fr 1fr; }
       .steps { grid-template-columns: 1fr; gap: 40px; }
       nav.links { display: none; }
-      header .btn { margin-left: auto; }
+      header .wrap { gap: 10px; }
+      #lang-btn { margin-left: auto; }
     }
     @media (max-width: 560px) {
       .wrap { padding-left: 16px; padding-right: 16px; }
@@ -145,32 +146,33 @@
 <header>
   <div class="wrap">
     <a class="logo" href="./"><img src="app/icons/icon.svg" alt=""><span>Vault<b>Card</b></span></a>
-    <nav class="links"><a href="#features">功能</a><a href="#how">怎麼用</a><a href="#faq">常見問題</a></nav>
-    <a class="btn primary sm" href="app/">開啟 App</a>
+    <nav class="links"><a href="#features" data-en="Features">功能</a><a href="#how" data-en="How it works">怎麼用</a><a href="#faq" data-en="FAQ">常見問題</a></nav>
+    <button class="btn sm" id="lang-btn" type="button">EN</button>
+    <a class="btn primary sm" href="app/" data-en="Open app">開啟 App</a>
   </div>
 </header>
 
 <main>
   <div class="wrap hero">
     <div>
-      <span class="tag">💎 一張名片，就是一則筆記</span>
-      <h1>交換名片，<br>把人脈<em>存成筆記</em>。</h1>
-      <p class="lead">名片一多，就忘了誰是誰？VaultCard 讓你掃一下 QR 就交換名片，把每個認識的人存成一則 Markdown 筆記：記下在哪裡認識、聊了什麼，用 <code>[[連結]]</code> 把人串起來，在圖譜裡看見你的人脈網路。</p>
+      <span class="tag" data-en="💎 Your business card is a note">💎 一張名片，就是一則筆記</span>
+      <h1 data-en="Swap cards.<br>Save people as <em>notes</em>.">交換名片，<br>把人脈<em>存成筆記</em>。</h1>
+      <p class="lead" data-en="Met too many people to remember who's who? With VaultCard you swap cards with a quick QR scan and save everyone you meet as a Markdown note: where you met, what you talked about. Connect people with <code>[[links]]</code> and see your network in a graph.">名片一多，就忘了誰是誰？VaultCard 讓你掃一下 QR 就交換名片，把每個認識的人存成一則 Markdown 筆記：記下在哪裡認識、聊了什麼，用 <code>[[連結]]</code> 把人串起來，在圖譜裡看見你的人脈網路。</p>
       <div class="cta">
-        <a class="btn primary" href="app/#/card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>免費建立我的名片</a>
+        <a class="btn primary" href="app/#/card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span data-en="Create my card — free">免費建立我的名片</span></a>
         <a class="btn" id="appstore" href="#" aria-disabled="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.2-.8s1.9.8 3.2.8c1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.6-1-2.6-3.9zM14 5.4c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg><span id="appstore-text">App Store 即將上架</span></a>
       </div>
-      <ul class="checks"><li>不用註冊</li><li>掃 QR 就交換</li><li>免費、無廣告</li><li>資料只在你手機上</li></ul>
+      <ul class="checks" data-en="<li>No sign-up</li><li>Swap with a QR scan</li><li>Free, no ads</li><li>Data stays on your phone</li>"><li>不用註冊</li><li>掃 QR 就交換</li><li>免費、無廣告</li><li>資料只在你手機上</li></ul>
       <div class="counter" id="counter"><span class="dot"></span><span id="counter-text">剛上線，歡迎成為第一批使用者</span></div>
     </div>
     <div class="stage">
       <span class="spark" style="left:9%;top:8%">✦</span><span class="spark" style="right:10%;bottom:12%;color:var(--gold)">✦</span>
       <div class="phone">
         <div class="screen" id="screen">
-          <img class="on" src="img/card.webp" alt="我的名片：預覽與 QR Code">
-          <img src="img/receive.webp" alt="收到名片，存成人脈筆記" loading="lazy">
-          <img src="img/note.webp" alt="人脈筆記與反向連結" loading="lazy">
-          <img src="img/graph.webp" alt="人脈圖譜" loading="lazy">
+          <img class="on" src="img/card.webp" alt="我的名片：預覽與 QR Code" data-en-alt="My card: preview and QR code">
+          <img src="img/receive.webp" alt="收到名片，存成人脈筆記" data-en-alt="Received card, saved as a contact note" loading="lazy">
+          <img src="img/note.webp" alt="人脈筆記與反向連結" data-en-alt="Contact note with backlinks" loading="lazy">
+          <img src="img/graph.webp" alt="人脈圖譜" data-en-alt="Network graph" loading="lazy">
         </div>
         <div class="dots" id="dots"></div>
       </div>
@@ -179,60 +181,82 @@
 
   <section id="features">
     <div class="wrap">
-      <div class="sec-head"><div class="eyebrow">Features</div><h2>名片、筆記、圖譜，一次到位</h2><p>喜歡做筆記的人，也該用筆記的方式經營人脈。</p></div>
+      <div class="sec-head"><div class="eyebrow">Features</div><h2 data-en="Cards, notes and a graph — all in one">名片、筆記、圖譜，一次到位</h2><p data-en="If you love taking notes, your network deserves the same treatment.">喜歡做筆記的人，也該用筆記的方式經營人脈。</p></div>
       <div class="grid">
-        <div class="feat"><div class="ico">🪪</div><h3>30 秒做好名片</h3><p>名字、職稱、自介、標籤，加上電話、Email、LINE、IG、Threads、LinkedIn、GitHub，即時預覽、自動產生 QR Code。</p></div>
-        <div class="feat"><div class="ico">🤝</div><h3>掃一下就交換</h3><p>對方用手機相機掃 QR 就能看到你的名片，不用裝 App。存進人脈後一鍵回傳他的名片。</p></div>
-        <div class="feat"><div class="ico">📄</div><h3>每個人都是一則筆記</h3><p>記下在哪裡、哪天認識，寫下聊了什麼。支援 Markdown、<code style="font-family:var(--mono)">#標籤</code>、Callout。</p></div>
-        <div class="feat"><div class="ico">🔗</div><h3>雙向連結與反向連結</h3><p>在筆記裡寫 [[名字]] 把人串起來，看誰提到了誰、誰是同一場活動認識的。</p></div>
-        <div class="feat"><div class="ico">🕸️</div><h3>人脈圖譜</h3><p>以你為中心，人脈、活動、標籤連成一張可拖曳、縮放的網路圖，誰是關鍵人物一眼就懂。</p></div>
-        <div class="feat"><div class="ico">💎</div><h3>匯出成 Vault</h3><p>一鍵下載 .zip：每個人一則 .md 筆記（含屬性），直接用 Obsidian 等 Markdown 筆記軟體開啟。</p></div>
+        <div class="feat"><div class="ico">🪪</div><h3 data-en="A card in 30 seconds">30 秒做好名片</h3><p data-en="Name, title, bio and tags, plus phone, email, LINE, Instagram, Threads, LinkedIn and GitHub — with a live preview and an auto-generated QR code.">名字、職稱、自介、標籤，加上電話、Email、LINE、IG、Threads、LinkedIn、GitHub，即時預覽、自動產生 QR Code。</p></div>
+        <div class="feat"><div class="ico">🤝</div><h3 data-en="Scan to swap">掃一下就交換</h3><p data-en="They scan your QR with their phone camera and see your card — no app needed. After saving, they send theirs back in one tap.">對方用手機相機掃 QR 就能看到你的名片，不用裝 App。存進人脈後一鍵回傳他的名片。</p></div>
+        <div class="feat"><div class="ico">📄</div><h3 data-en="Every person is a note">每個人都是一則筆記</h3><p data-en="Record where and when you met and what you talked about. Supports Markdown, <code style='font-family:var(--mono)'>#tags</code> and callouts.">記下在哪裡、哪天認識，寫下聊了什麼。支援 Markdown、<code style="font-family:var(--mono)">#標籤</code>、Callout。</p></div>
+        <div class="feat"><div class="ico">🔗</div><h3 data-en="Links and backlinks">雙向連結與反向連結</h3><p data-en="Write [[name]] to connect people, then see who mentions whom and who you met at the same event.">在筆記裡寫 [[名字]] 把人串起來，看誰提到了誰、誰是同一場活動認識的。</p></div>
+        <div class="feat"><div class="ico">🕸️</div><h3 data-en="Network graph">人脈圖譜</h3><p data-en="With you at the center, contacts, events and tags form a graph you can drag and zoom — spot the key people at a glance.">以你為中心，人脈、活動、標籤連成一張可拖曳、縮放的網路圖，誰是關鍵人物一眼就懂。</p></div>
+        <div class="feat"><div class="ico">💎</div><h3 data-en="Export as a vault">匯出成 Vault</h3><p data-en="Download a .zip in one tap: one .md note per person (with properties), ready to open in Obsidian or any Markdown app.">一鍵下載 .zip：每個人一則 .md 筆記（含屬性），直接用 Obsidian 等 Markdown 筆記軟體開啟。</p></div>
       </div>
     </div>
   </section>
 
   <section id="how">
     <div class="wrap">
-      <div class="sec-head"><div class="eyebrow">How it works</div><h2>三步驟，人脈自己長出來</h2></div>
+      <div class="sec-head"><div class="eyebrow">How it works</div><h2 data-en="Three steps to a growing network">三步驟，人脈自己長出來</h2></div>
       <div class="steps">
-        <div class="step"><div class="shot"><img src="img/card.webp" alt="" loading="lazy"></div><div class="n">1</div><h3>做一張名片</h3><p>填好資料，App 自動產生你的 QR Code 和分享連結。</p></div>
-        <div class="step"><div class="shot"><img src="img/receive.webp" alt="" loading="lazy"></div><div class="n">2</div><h3>掃 QR 交換</h3><p>記下在哪裡認識，存成人脈筆記，再回傳你的名片。</p></div>
-        <div class="step"><div class="shot"><img src="img/graph.webp" alt="" loading="lazy"></div><div class="n">3</div><h3>看見人脈網路</h3><p>寫筆記、加連結，圖譜會慢慢長成你的人際地圖。</p></div>
+        <div class="step"><div class="shot"><img src="img/card.webp" alt="" loading="lazy"></div><div class="n">1</div><h3 data-en="Make your card">做一張名片</h3><p data-en="Fill in your details and get your QR code and share link instantly.">填好資料，App 自動產生你的 QR Code 和分享連結。</p></div>
+        <div class="step"><div class="shot"><img src="img/receive.webp" alt="" loading="lazy"></div><div class="n">2</div><h3 data-en="Scan to swap">掃 QR 交換</h3><p data-en="Note where you met, save them as a contact note, and send your card back.">記下在哪裡認識，存成人脈筆記，再回傳你的名片。</p></div>
+        <div class="step"><div class="shot"><img src="img/graph.webp" alt="" loading="lazy"></div><div class="n">3</div><h3 data-en="See your network">看見人脈網路</h3><p data-en="Write notes and add links, and your graph grows into a map of your connections.">寫筆記、加連結，圖譜會慢慢長成你的人際地圖。</p></div>
       </div>
     </div>
   </section>
 
   <section id="faq">
     <div class="wrap">
-      <div class="sec-head"><div class="eyebrow">FAQ</div><h2>常見問題</h2></div>
+      <div class="sec-head"><div class="eyebrow">FAQ</div><h2 data-en="FAQ">常見問題</h2></div>
       <div class="faq">
-        <details open><summary>要付費或註冊嗎？</summary><p>不用。VaultCard 完全免費、沒有廣告，也不需要註冊帳號，打開就能用。</p></details>
-        <details><summary>我的資料存在哪裡？安全嗎？</summary><p>VaultCard 沒有伺服器。你的名片和人脈筆記只存在你自己的手機或瀏覽器裡，我們看不到也不會蒐集。分享名片時，名片內容是直接放在連結裡傳給對方的，所以只要填你願意公開的資訊就好。</p></details>
-        <details><summary>對方沒有裝 VaultCard 也能交換嗎？</summary><p>可以。對方用手機相機掃你的 QR Code，會在瀏覽器打開你的名片，可以存進通訊錄（vCard），也可以直接用網頁版建立自己的名片回傳給你。</p></details>
-        <details><summary>一定要會用 Obsidian 嗎？</summary><p>不用。VaultCard 本身就能寫筆記、看圖譜。如果你有在用 Obsidian 或其他 Markdown 筆記軟體，可以把整個人脈匯出成 .zip，直接放進你的筆記庫。</p></details>
-        <details><summary>換手機時資料會不見嗎？</summary><p>資料只存在裝置上，換手機前請到 App 的「設定與資料」下載備份檔，在新手機用「還原備份」匯入即可。</p></details>
-        <details><summary>有網頁版和 App 嗎？</summary><p>都有。網頁版現在就能用（右上角「開啟 App」），iPhone 版可以在 <a href="https://apps.apple.com/app/vaultcard-%E4%BA%BA%E8%84%88%E5%90%8D%E7%89%87/id6838656502" target="_blank" rel="noopener" style="color:var(--accent-2)">App Store 免費下載</a>。</p></details>
+        <details open><summary data-en="Does it cost anything? Do I need an account?">要付費或註冊嗎？</summary><p data-en="No. VaultCard is completely free with no ads and no sign-up — just open it and go.">不用。VaultCard 完全免費、沒有廣告，也不需要註冊帳號，打開就能用。</p></details>
+        <details><summary data-en="Where is my data stored? Is it safe?">我的資料存在哪裡？安全嗎？</summary><p data-en="VaultCard has no servers. Your card and contact notes live only on your own phone or browser — we can't see them and never collect them. When you share your card, its contents travel inside the link itself, so only include what you're happy to share.">VaultCard 沒有伺服器。你的名片和人脈筆記只存在你自己的手機或瀏覽器裡，我們看不到也不會蒐集。分享名片時，名片內容是直接放在連結裡傳給對方的，所以只要填你願意公開的資訊就好。</p></details>
+        <details><summary data-en="Can I swap with someone who doesn't have VaultCard?">對方沒有裝 VaultCard 也能交換嗎？</summary><p data-en="Yes. They scan your QR code with their phone camera and your card opens in their browser. They can save it to Contacts (vCard), or create their own card on the web and send it back.">可以。對方用手機相機掃你的 QR Code，會在瀏覽器打開你的名片，可以存進通訊錄（vCard），也可以直接用網頁版建立自己的名片回傳給你。</p></details>
+        <details><summary data-en="Do I need to know Obsidian?">一定要會用 Obsidian 嗎？</summary><p data-en="No. VaultCard handles notes and the graph on its own. If you use Obsidian or another Markdown app, you can export your whole network as a .zip and drop it into your vault.">不用。VaultCard 本身就能寫筆記、看圖譜。如果你有在用 Obsidian 或其他 Markdown 筆記軟體，可以把整個人脈匯出成 .zip，直接放進你的筆記庫。</p></details>
+        <details><summary data-en="Will I lose my data when I switch phones?">換手機時資料會不見嗎？</summary><p data-en="Your data lives only on your device. Before switching, download a backup from “Settings &amp; Data” in the app, then use “Restore backup” on your new phone.">資料只存在裝置上，換手機前請到 App 的「設定與資料」下載備份檔，在新手機用「還原備份」匯入即可。</p></details>
+        <details><summary data-en="Is there a web version and an app?">有網頁版和 App 嗎？</summary><p data-en="Both. The web version works right now (“Open app” at the top right), and the iPhone app is a <a href='https://apps.apple.com/app/vaultcard-%E4%BA%BA%E8%84%88%E5%90%8D%E7%89%87/id6838656502' target='_blank' rel='noopener' style='color:var(--accent-2)'>free download on the App Store</a>.">都有。網頁版現在就能用（右上角「開啟 App」），iPhone 版可以在 <a href="https://apps.apple.com/app/vaultcard-%E4%BA%BA%E8%84%88%E5%90%8D%E7%89%87/id6838656502" target="_blank" rel="noopener" style="color:var(--accent-2)">App Store 免費下載</a>。</p></details>
       </div>
     </div>
   </section>
 
   <div class="wrap">
     <div class="band">
-      <h2>下一場活動，帶一張會記事的名片</h2>
-      <p>30 秒做好你的名片，現在就開始。</p>
-      <div class="cta"><a class="btn primary" href="app/#/card">免費建立我的名片</a><a class="btn" href="app/#/welcome">先看看怎麼用</a></div>
+      <h2 data-en="Bring a card that remembers to your next event">下一場活動，帶一張會記事的名片</h2>
+      <p data-en="Make your card in 30 seconds — start now.">30 秒做好你的名片，現在就開始。</p>
+      <div class="cta"><a class="btn primary" href="app/#/card" data-en="Create my card — free">免費建立我的名片</a><a class="btn" href="app/#/welcome" data-en="See how it works">先看看怎麼用</a></div>
     </div>
   </div>
 </main>
 
 <footer>
   <div class="wrap">
-    <span>© 2026 VaultCard · 與 Obsidian（Dynalist Inc.）無隸屬關係</span>
-    <span><a href="privacy.html">隱私權政策</a> · <a href="app/">開啟 App</a></span>
+    <span data-en="© 2026 VaultCard · Not affiliated with Obsidian (Dynalist Inc.)">© 2026 VaultCard · 與 Obsidian（Dynalist Inc.）無隸屬關係</span>
+    <span><a href="privacy.html" data-en="Privacy policy">隱私權政策</a> · <a href="app/" data-en="Open app">開啟 App</a></span>
   </div>
 </footer>
 
 <script>
+  // 語言：跟 App 共用設定（localStorage: vaultcard:lang），預設跟隨瀏覽器
+  const LANG = (function () {
+    try { const s = localStorage.getItem('vaultcard:lang'); if (s === 'zh' || s === 'en') return s; } catch (e) { /* 私密模式 */ }
+    const l = (navigator.languages && navigator.languages[0]) || navigator.language || 'en';
+    return /^zh/i.test(l) ? 'zh' : 'en';
+  })();
+  const EN = LANG === 'en';
+  document.documentElement.lang = EN ? 'en' : 'zh-Hant';
+  if (EN) {
+    document.querySelectorAll('[data-en]').forEach((el) => { el.innerHTML = el.getAttribute('data-en'); });
+    document.querySelectorAll('[data-en-alt]').forEach((el) => { el.alt = el.getAttribute('data-en-alt'); });
+    document.querySelectorAll('img[src^="img/"]').forEach((el) => { el.src = el.getAttribute('src').replace(/^img\//, 'img/en/'); });
+    document.title = 'VaultCard · Swap cards, save people as notes';
+    document.querySelector('meta[name=description]').setAttribute('content', 'VaultCard is a Markdown-style business card: swap cards with a QR scan, save everyone you meet as a note, and see your network with [[links]] and a graph. Free, no sign-up, no servers.');
+    document.getElementById('counter-text').textContent = 'Just launched — be one of the first users';
+    document.getElementById('appstore-text').textContent = 'Coming soon to the App Store';
+  }
+  const lb = document.getElementById('lang-btn');
+  lb.textContent = EN ? '中文' : 'EN';
+  lb.setAttribute('aria-label', EN ? 'Switch to Chinese' : '切換成英文');
+  lb.addEventListener('click', () => { try { localStorage.setItem('vaultcard:lang', EN ? 'zh' : 'en'); } catch (e) { /* 私密模式 */ } location.reload(); });
+
   // 手機畫面輪播
   (function () {
     const imgs = Array.from(document.querySelectorAll('#screen img'));
@@ -250,13 +274,13 @@
     if (users > 0) {
       const t = document.getElementById('counter-text');
       t.textContent = '';
-      const b = document.createElement('b'); b.textContent = users.toLocaleString('zh-TW');
-      t.append(b, ' 人已經在用 VaultCard 交換名片');
+      const b = document.createElement('b'); b.textContent = users.toLocaleString(EN ? 'en-US' : 'zh-TW');
+      t.append(b, EN ? (users === 1 ? ' person is using VaultCard' : ' people are using VaultCard') : ' 人已經在用 VaultCard 交換名片');
     }
     if (typeof s.appStoreUrl === 'string' && /^https:\/\/apps\.apple\.com\//.test(s.appStoreUrl)) {
       const a = document.getElementById('appstore');
       a.href = s.appStoreUrl; a.removeAttribute('aria-disabled'); a.target = '_blank'; a.rel = 'noopener';
-      document.getElementById('appstore-text').textContent = '在 App Store 下載';
+      document.getElementById('appstore-text').textContent = EN ? 'Download on the App Store' : '在 App Store 下載';
     }
   }).catch(() => {});
   document.getElementById('appstore').addEventListener('click', (e) => { if (e.currentTarget.getAttribute('aria-disabled') === 'true') e.preventDefault(); });

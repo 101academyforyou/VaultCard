@@ -64,7 +64,7 @@
     const content = opts.embed ? opts.embed(target) : null;
     const tag = isInline ? 'span' : 'div';
     const body = content == null
-      ? '<span class="faint">找不到「' + esc(target) + '」，Obsidian 會顯示可點擊建立的提示。</span>'
+      ? '<span class="faint">' + (global.I18N ? global.I18N.t('找不到「{0}」，Obsidian 會顯示可點擊建立的提示。', esc(target)) : '找不到「' + esc(target) + '」') + '</span>'
       : (isInline ? inline(content, { ...opts, embed: null }) : render(content, { ...opts, embed: null }));
     return '<' + tag + ' class="embed" style="display:block"><span class="embed-title" style="display:block">📄 ' + esc(target) + '</span>' + body + '</' + tag + '>';
   }
@@ -78,7 +78,7 @@
       else if (lastKey && /^\s*-\s+/.test(l)) lastKey.v.push(l.replace(/^\s*-\s+/, ''));
     });
     if (!rows.length) return '';
-    return '<div class="frontmatter"><div class="fm-title">屬性 PROPERTIES</div>' + rows.map((r) => {
+    return '<div class="frontmatter"><div class="fm-title">' + (global.I18N ? global.I18N.t('屬性 PROPERTIES') : '屬性 PROPERTIES') + '</div>' + rows.map((r) => {
       let v = r.v.join(', ').replace(/^\[|\]$/g, '');
       return '<div class="fm-row"><span class="fm-key">' + esc(r.k) + '</span><span>' + esc(v) + '</span></div>';
     }).join('') + '</div>';
