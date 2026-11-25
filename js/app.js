@@ -312,5 +312,6 @@
   const CX = window.Connect({ $, $$, esc, icon, toast, haptic, setTitle, makeGraph, native, setCleanup: (fn) => { cleanup = fn; } });
   shell();
   window.addEventListener('hashchange', route);
-  route();
+  // 等 App 內的原生備份檢查完再畫第一個畫面（網頁版會立刻完成）
+  CX.ready.then(route, route);
 })();

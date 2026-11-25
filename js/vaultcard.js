@@ -38,7 +38,28 @@
       try { const d = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY) || '{}')); d.people = (d.people || []).filter((p) => p && p.card); return d; }
       catch (e) { return blank(); }
     }
-    function save() { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) { toast(t('⚠️ 無法儲存（可能是私密瀏覽模式）')); } }
+    // App 內：另外存一份到原生儲存（iOS 的 UserDefaults），避免系統清掉 WebView 的 localStorage 時資料不見
+    const plugin = (name) => (native && global.Capacitor ? (global.Capacitor.registerPlugin ? global.Capacitor.registerPlugin(name) : (global.Capacitor.Plugins || {})[name]) : null);
+    const Prefs = plugin('Preferences');
+    const hasData = (d) => !!(d && (d.me || (d.people && d.people.length)));
+    function save() {
+      const json = JSON.stringify(db);
+      let ok = true;
+      try { localStorage.setItem(KEY, json); } catch (e) { ok = false; }
+      if (Prefs) Prefs.set({ key: KEY, value: json }).catch(() => {});
+      else if (!ok) toast(t('⚠️ 無法儲存（可能是私密瀏覽模式）'));
+    }
+    // 啟動時：本機沒有資料但原生儲存有 → 還原；本機有資料但原生沒有 → 補存一份
+    const ready = (async () => {
+      if (!native && navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+      if (!Prefs) return;
+      try {
+        const { value } = await Prefs.get({ key: KEY });
+        const saved = value ? Object.assign(blank(), JSON.parse(value)) : null;
+        if (!hasData(db) && hasData(saved)) { saved.people = (saved.people || []).filter((p) => p && p.card); db = saved; try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) { /* 只存在原生儲存也可以 */ } }
+        else if (hasData(db) && !value) await Prefs.set({ key: KEY, value: JSON.stringify(db) });
+      } catch (e) { /* 原生儲存不可用時就只用 localStorage */ }
+    })();
 
     const today = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
     const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -173,7 +194,11 @@
           db.me = c.n ? c : null; save();
           const mySeq = ++seq;
           const box = $('#cx-share'); if (!box) return;
-          if (!c.n) { box.innerHTML = '<p class="muted" style="margin:0">' + t('先填上名字，就能產生你的分享連結與 QR Code。') + '</p>'; return; }
+          if (!c.n) {
+            box.innerHTML = '<p class="muted" style="margin:0">' + t('先填上名字，就能產生你的分享連結與 QR Code。') + '</p>' + (canScan() ? '<button class="btn cx-scan-btn" data-a="scan">' + t('📷 掃描對方名片') + '</button>' : '');
+            box.onclick = (e) => { if (e.target.closest('[data-a="scan"]')) scan(); };
+            return;
+          }
           const link = shareUrl(await encode(c));
           if (mySeq !== seq || !$('#cx-share')) return;
           box.innerHTML = `<div class="cx-qr">${qrSVG(link).svg}</div>
@@ -184,11 +209,13 @@
   <button class="btn" data-a="png">${icon('download')}${t('QR 圖片')}</button>
   <button class="btn" data-a="md">${icon('download')}.md</button>
   <button class="btn" data-a="vcf">${icon('download')}vCard</button>
-</div>`;
+</div>
+${canScan() ? `<button class="btn cx-scan-btn" data-a="scan">${t('📷 掃描對方名片')}</button>` : ''}`;
           box.onclick = (e) => {
             const a = e.target.closest('[data-a]'); if (!a) return;
             const k = a.dataset.a;
-            if (k === 'share') shareLink(link, c.n);
+            if (k === 'scan') scan();
+            else if (k === 'share') shareLink(link, c.n);
             else if (k === 'copy') copy(link);
             else if (k === 'png') qrPNG(link, c.n);
             else if (k === 'md') download(new Blob([meMD(c)], { type: 'text/markdown;charset=utf-8' }), safeFile(c.n) + '.md');
@@ -270,12 +297,11 @@
       v.className = 'view';
       const tags = {};
       db.people.forEach((p) => allTags(p).forEach((t) => { tags[t] = (tags[t] || 0) + 1; }));
-      const canScan = !native && 'BarcodeDetector' in global && navigator.mediaDevices && navigator.mediaDevices.getUserMedia;
       v.innerHTML = `<div class="cx-head" style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap">
   <div><h1>${t('👥 我的人脈')}</h1><p class="muted" style="margin:0">${t('每個人都是一則筆記。在筆記裡用 <code>[[名字]]</code> 連結彼此，用 <code>#標籤</code> 分類。')}</p></div>
   <div class="cx-actions">
-    ${canScan ? '<button class="btn primary" id="cx-scan">' + t('📷 掃描名片') + '</button>' : ''}
-    <button class="btn ${canScan ? '' : 'primary'}" id="cx-paste">${t('🔗 貼上名片連結')}</button>
+    ${canScan() ? '<button class="btn primary" id="cx-scan">' + t('📷 掃描名片') + '</button>' : ''}
+    <button class="btn ${canScan() ? '' : 'primary'}" id="cx-paste">${t('🔗 貼上名片連結')}</button>
     <button class="btn" id="cx-new">${t('＋ 手動新增')}</button>
   </div>
 </div>
@@ -365,26 +391,57 @@ ${Object.keys(tags).length ? `<div class="cx-chips">${Object.entries(tags).sort(
       if (p) location.hash = '#/c/' + p; else toast(t('❌ 這不是 VaultCard 名片連結'));
     }
 
+    const canScan = () => !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+    function loadScript(src) {
+      return new Promise((res, rej) => {
+        if (global.jsQR) return res();
+        const el = document.createElement('script'); el.src = src; el.onload = () => res(); el.onerror = rej; document.head.appendChild(el);
+      });
+    }
+    async function makeDetector(video) {
+      if ('BarcodeDetector' in global) {
+        try {
+          const fmts = await global.BarcodeDetector.getSupportedFormats();
+          if (fmts.includes('qr_code')) { const det = new global.BarcodeDetector({ formats: ['qr_code'] }); return async () => (await det.detect(video)).map((c) => c.rawValue); }
+        } catch (e) { /* 改用 jsQR */ }
+      }
+      await loadScript('js/vendor/jsQR.js');
+      const cv = document.createElement('canvas'); const cx = cv.getContext('2d', { willReadFrequently: true });
+      return async () => {
+        const w = video.videoWidth, h = video.videoHeight; if (!w || !h) return [];
+        const k = Math.min(1, 800 / Math.max(w, h)); cv.width = Math.round(w * k); cv.height = Math.round(h * k);
+        cx.drawImage(video, 0, 0, cv.width, cv.height);
+        const r = global.jsQR(cx.getImageData(0, 0, cv.width, cv.height).data, cv.width, cv.height, { inversionAttempts: 'dontInvert' });
+        return r && r.data ? [r.data] : [];
+      };
+    }
     function scan() {
+      if (!canScan()) { pasteLink(); return; }
       const back = document.createElement('div');
       back.className = 'palette-backdrop';
-      back.innerHTML = '<div class="palette cx-scan" role="dialog" aria-label="' + t('掃描名片') + '"><video playsinline muted></video><div class="cx-scan-bar"><span>' + t('把 QR Code 對準框框') + '</span><button class="btn">' + t('關閉') + '</button></div></div>';
+      back.innerHTML = '<div class="palette cx-scan" role="dialog" aria-label="' + t('掃描名片') + '"><div class="cx-scan-view"><video playsinline muted autoplay></video><i class="cx-scan-frame"></i></div><div class="cx-scan-bar"><span id="cx-scan-msg">' + t('正在開啟相機…') + '</span><button class="btn" data-x="paste">' + t('🔗 貼上名片連結') + '</button><button class="btn" data-x="close">' + t('關閉') + '</button></div></div>';
       document.body.appendChild(back);
-      const video = $('video', back); let stream = null; let stop = false;
-      const close = () => { stop = true; if (stream) stream.getTracks().forEach((t) => t.stop()); back.remove(); };
-      $('button', back).addEventListener('click', close);
+      const video = $('video', back); const msg = $('#cx-scan-msg', back); let stream = null; let stop = false;
+      const close = () => { stop = true; if (stream) stream.getTracks().forEach((tr) => tr.stop()); if (back.parentNode) back.parentNode.removeChild(back); };
+      $('[data-x="close"]', back).addEventListener('click', close);
+      $('[data-x="paste"]', back).addEventListener('click', () => { close(); pasteLink(); });
       back.addEventListener('click', (e) => { if (e.target === back) close(); });
-      const det = new global.BarcodeDetector({ formats: ['qr_code'] });
-      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then((s) => {
-        stream = s; video.srcObject = s; return video.play();
-      }).then(function loop() {
-        if (stop) return;
-        det.detect(video).then((codes) => {
-          const hit = codes.map((c) => extractPayload(c.rawValue)).find(Boolean);
-          if (hit) { haptic('success'); close(); location.hash = '#/c/' + hit; }
-          else setTimeout(loop, 250);
-        }).catch(() => setTimeout(loop, 400));
-      }).catch(() => { close(); toast(t('📷 無法開啟相機，請改用「貼上名片連結」')); });
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false }).then(async (st) => {
+        stream = st; if (stop) { close(); return; }
+        video.srcObject = st; await video.play().catch(() => {});
+        msg.textContent = t('對準對方的 VaultCard QR Code');
+        const detect = await makeDetector(video);
+        let warned = false;
+        (async function loop() {
+          if (stop) return;
+          let codes = [];
+          try { codes = await detect(); } catch (e) { /* 這一格辨識失敗，繼續 */ }
+          const hit = codes.map((c) => extractPayload(c)).find(Boolean);
+          if (hit) { haptic('success'); close(); location.hash = '#/c/' + hit; return; }
+          if (codes.length && !warned) { warned = true; msg.textContent = t('這個 QR Code 不是 VaultCard 名片'); }
+          setTimeout(loop, 180);
+        })();
+      }).catch(() => { close(); toast(t('📷 無法開啟相機。請到設定允許 VaultCard 使用相機，或改用「貼上名片連結」。')); });
     }
 
     /* ---------------- 人脈筆記 ---------------- */
@@ -626,7 +683,19 @@ ${db.people.length ? '' : '<div class="tip" style="margin-top:16px"><span class=
     }
 
     /* ---------------- 小工具 ---------------- */
-    function download(blob, name) {
+    const FS = plugin('Filesystem'); const Share = plugin('Share');
+    const toBase64 = (blob) => new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1] || ''); fr.onerror = rej; fr.readAsDataURL(blob); });
+    async function download(blob, name) {
+      if (FS && Share) {
+        // iPhone / Android App：WebView 不支援 <a download>，改成寫入暫存檔再打開系統分享面板
+        try {
+          const { uri } = await FS.writeFile({ path: name, data: await toBase64(blob), directory: 'CACHE' });
+          await Share.share({ title: name, files: [uri] });
+        } catch (e) {
+          if (!/cancel/i.test(String(e && (e.message || e)))) toast(t('❌ 無法儲存檔案'));
+        }
+        return;
+      }
       const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(a.href), 1500);
@@ -635,6 +704,7 @@ ${db.people.length ? '' : '<div class="tip" style="margin-top:16px"><span class=
       (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(() => toast(t('🔗 已複製名片連結'))).catch(() => { prompt(t('複製這個連結：'), text); });
     }
     function shareLink(link, name) {
+      if (Share) { Share.share({ title: t('{0} 的名片', name), text: t('這是我的 VaultCard 名片，打開就能存成人脈筆記 👇'), url: link }).catch(() => {}); return; }
       if (navigator.share) navigator.share({ title: t('{0} 的名片', name), text: t('這是我的 VaultCard 名片，打開就能存成人脈筆記 👇'), url: link }).catch(() => {});
       else copy(link);
     }
@@ -643,7 +713,7 @@ ${db.people.length ? '' : '<div class="tip" style="margin-top:16px"><span class=
     const DEMO_EN = { n: 'Lena Lin', t: 'Knowledge Coach', o: 'VaultCard Community', b: 'Helping people build a second brain with Obsidian.\nInto book clubs, note-taking and good coffee ☕', g: ['Obsidian', 'PKM', 'BookClub'], w: 'obsidian.md', th: '@vaultcard', c: 0 };
 
     return {
-      cardView, receiveView, peopleView, networkView, settingsView, openDemo,
+      cardView, receiveView, peopleView, networkView, settingsView, openDemo, ready,
       hasCard: () => !!db.me,
       personView: (v, id, mode) => personView(v, id, mode === 'edit'),
       count: () => db.people.length

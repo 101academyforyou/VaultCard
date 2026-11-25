@@ -98,6 +98,9 @@
     '貼上對方傳給你的 VaultCard 名片連結：': 'Paste the VaultCard link they sent you:', '❌ 這不是 VaultCard 名片連結': "❌ That's not a VaultCard link",
     '掃描名片': 'Scan card', '把 QR Code 對準框框': 'Point your camera at the QR code', '關閉': 'Close',
     '📷 無法開啟相機，請改用「貼上名片連結」': "📷 Can't open the camera — use “Paste card link” instead",
+    '📷 掃描對方名片': '📷 Scan their card', '正在開啟相機…': 'Opening camera…', '對準對方的 VaultCard QR Code': 'Point at their VaultCard QR code',
+    '這個 QR Code 不是 VaultCard 名片': "This QR code isn't a VaultCard", '❌ 無法儲存檔案': "❌ Couldn't save the file",
+    '📷 無法開啟相機。請到設定允許 VaultCard 使用相機，或改用「貼上名片連結」。': '📷 Can’t open the camera. Allow camera access for VaultCard in Settings, or use “Paste card link”.',
 
     // 人脈筆記
     '屬性': 'Properties', '📍 在哪裡認識': '📍 Where you met', '活動、社群、朋友介紹…': 'Event, community, intro from a friend…', '📅 認識日期': '📅 Date met',
