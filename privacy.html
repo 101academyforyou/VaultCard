@@ -14,10 +14,25 @@
     h2 { color: #a88bfa; font-size: 19px; margin-top: 2em; }
     a { color: #a88bfa; }
     .muted { color: #a3a3a3; font-size: 14px; }
+    .langs { float: right; font-size: 14px; }
+    .langs button { background: none; border: 1px solid #444; color: #dcddde; border-radius: 99px; padding: 3px 12px; cursor: pointer; font: inherit; }
+    .l-en { display: none; }
+    html.en .l-en { display: block; }
+    html.en .l-zh { display: none; }
   </style>
+  <script>
+    (function () {
+      let l = null;
+      try { l = localStorage.getItem('vaultcard:lang'); } catch (e) { /* 私密模式 */ }
+      if (l !== 'zh' && l !== 'en') l = /^zh/i.test((navigator.languages && navigator.languages[0]) || navigator.language || '') ? 'zh' : 'en';
+      if (l === 'en') { document.documentElement.classList.add('en'); document.documentElement.lang = 'en'; document.title = 'Privacy Policy · VaultCard'; }
+    })();
+  </script>
 </head>
 <body>
 <main>
+  <div class="langs"><button type="button" id="lang-btn"><span class="l-zh">English</span><span class="l-en">中文</span></button></div>
+  <div class="l-zh" lang="zh-Hant">
   <h1>隱私權政策</h1>
   <p class="muted">適用於 VaultCard 網頁版與 iOS / Android App　·　最後更新：2026 年 11 月 24 日</p>
 
@@ -45,6 +60,44 @@
   <p>如果你對本政策有任何問題，請透過 App Store / Google Play 商店頁面上的開發者聯絡方式與我們聯繫。</p>
 
   <p class="muted" style="margin-top:3em">VaultCard 為獨立專案，與 Obsidian（Dynalist Inc.）無隸屬關係。<br><a href="./">← 回到 VaultCard</a></p>
+  </div>
+
+  <div class="l-en" lang="en">
+  <h1>Privacy Policy</h1>
+  <p class="muted">Applies to the VaultCard website and iOS / Android apps · Last updated: November 25, 2026</p>
+
+  <h2>We don't collect any personal data</h2>
+  <p>VaultCard requires no account and has no backend server. We do not collect, transmit or share any of your personal data. The app contains no ads, no trackers and no third-party analytics.</p>
+
+  <h2>Your data stays on your device</h2>
+  <p>The card you create, the contact notes you save, and the notes and tags you write are stored only in your own device's local storage (browser localStorage / app storage). They are never uploaded to any server.</p>
+  <p>Deleting the app or clearing your browser's site data also deletes this content. You can download a backup or export an Obsidian vault from the “Settings &amp; Data” page.</p>
+
+  <h2>When you share your card</h2>
+  <p>When you share your card link or QR code, the card's contents are encoded directly in the link itself (the part after the # in the URL, which browsers never send to a server). <strong>Anyone who has the link can see what you put on your card</strong>, so only include information you're happy to share.</p>
+  <p>When you save someone else's card, that data likewise stays only on your device. Please respect their privacy and don't use their information in ways they haven't agreed to.</p>
+
+  <h2>Camera</h2>
+  <p>When you use “Scan card” in a supported browser, the camera feed is used only on your device to recognize the QR code in real time. Nothing is recorded, stored or uploaded.</p>
+
+  <h2>External links</h2>
+  <p>Website and social links on a card are provided by the card's owner. They open in your browser, and those sites' privacy policies are the responsibility of their operators.</p>
+
+  <h2>Children's privacy</h2>
+  <p>Because this service collects no personal data, it does not collect personal data from children.</p>
+
+  <h2>Contact us</h2>
+  <p>If you have any questions about this policy, please contact us through the developer contact details on our App Store / Google Play page.</p>
+
+  <p class="muted" style="margin-top:3em">VaultCard is an independent project and is not affiliated with Obsidian (Dynalist Inc.).<br><a href="./">← Back to VaultCard</a></p>
+  </div>
 </main>
+<script>
+  document.getElementById('lang-btn').addEventListener('click', () => {
+    const en = document.documentElement.classList.contains('en');
+    try { localStorage.setItem('vaultcard:lang', en ? 'zh' : 'en'); } catch (e) { /* 私密模式 */ }
+    location.reload();
+  });
+</script>
 </body>
 </html>

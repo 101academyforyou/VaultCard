@@ -39,6 +39,17 @@ VaultCard 人脈 Vault 2026-11-24.zip
 
 名片資料 → JSON → `deflate-raw` 壓縮 → base64url，放在網址 `#/c/` 後面。`#` 之後的內容瀏覽器不會送到伺服器，所以名片不經過任何後端。打開連結時會驗證、清理所有欄位（長度、型別、只允許安全的連結格式）。
 
+## 語言（繁體中文 / English）
+
+介紹頁、App、隱私權政策都支援中英文：
+
+- 預設跟隨裝置語言：中文裝置顯示中文，其他語言顯示英文
+- 使用者可以在 App 的「設定與資料 → 語言」、歡迎頁或介紹頁右上角切換，選擇會記住，三個頁面共用（`localStorage: vaultcard:lang`）
+- App 的文字在 `js/i18n.js`：程式裡直接寫中文 `t('中文 {0}', x)`，英文翻譯放在同一個檔案的 `EN` 字典；`{s}` 會在數量不是 1 時變成英文複數的 s
+- 介紹頁的英文寫在各元素的 `data-en` 屬性；英文版手機截圖在 `site/img/en/`
+- 匯出的 Vault 也會依語言使用英文資料夾與標籤（`People/`、`Events/`、`People MOC`）
+- iOS 的 `Info.plist` 宣告了 `en`、`zh-Hant` 兩種語言，App Store 會顯示這兩種語言，App 內也能正確判斷裝置語言
+
 ## 介紹頁與使用人數
 
 網站首頁是介紹頁（`site/`），App 在 `/app/`。舊的名片連結（`/#/c/…`）會自動轉到 `/app/`，不會失效。
@@ -104,6 +115,7 @@ manifest.webmanifest   PWA 設定
 sw.js                  離線快取
 css/style.css          Obsidian 風格紫黑色主題與響應式版面
 js/config.js           網頁版正式網址（分享連結用）
+js/i18n.js             中英文切換與英文翻譯字典
 CNAME                  GitHub Pages 自訂網域
 js/markdown.js         支援 Obsidian 語法的輕量 Markdown 轉換器
 js/vaultcard.js        名片編碼 / QR、人脈筆記、圖譜資料、Vault / vCard / .md 匯出

@@ -6,6 +6,7 @@
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
   const esc = window.MD.esc;
+  const { t, L } = window.I18N;
 
   /* ---------------- 原生 App（Capacitor）---------------- */
   const native = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
@@ -33,28 +34,28 @@
   const logo = () => '<img src="icons/icon.svg" alt="" style="width:100%;height:100%;display:block">';
 
   const NAV = [
-    { r: '/settings', label: '設定與資料', short: '設定', ico: 'settings' },
-    { r: '/card', label: '我的名片', short: '名片', ico: 'card' },
-    { r: '/network', label: '人脈圖譜', short: '圖譜', ico: 'graph' },
-    { r: '/people', label: '人脈', short: '人脈', ico: 'people' }
+    { r: '/settings', label: t('設定與資料'), short: t('設定'), ico: 'settings' },
+    { r: '/card', label: t('我的名片'), short: t('名片'), ico: 'card' },
+    { r: '/network', label: t('人脈圖譜'), short: t('圖譜'), ico: 'graph' },
+    { r: '/people', label: t('人脈'), short: t('人脈'), ico: 'people' }
   ];
 
   /* ---------------- 外框 ---------------- */
   function shell() {
     document.body.innerHTML = `
 <div class="app">
-  <aside class="ribbon" aria-label="功能區">
+  <aside class="ribbon" aria-label="${t('功能區')}">
     <a class="logo" href="#/welcome" title="VaultCard">${logo()}</a>
     ${NAV.map((n) => `<a class="icon-btn" href="#${n.r}" data-route="${n.r}" title="${n.label}">${icon(n.ico)}</a>`).join('')}
   </aside>
   <aside class="sidebar">
-    <a class="brand" href="#/welcome" style="color:inherit;text-decoration:none"><div style="width:34px;height:34px">${logo()}</div><div><div class="brand-name">VaultCard</div><div class="brand-sub">人脈就是你的 Vault</div></div></a>
+    <a class="brand" href="#/welcome" style="color:inherit;text-decoration:none"><div style="width:34px;height:34px">${logo()}</div><div><div class="brand-name">VaultCard</div><div class="brand-sub">${t('人脈就是你的 Vault')}</div></div></a>
     <nav class="nav">${NAV.map((n) => `<a href="#${n.r}" data-route="${n.r}">${icon(n.ico)}<span>${n.label}</span></a>`).join('')}</nav>
     <div class="sidebar-foot"><div class="mini-progress" id="mini-stat"></div></div>
   </aside>
   <div class="main">
     <header class="topbar">
-      <a class="icon-btn" id="top-back" href="#/" aria-label="返回" hidden>${icon('back')}</a>
+      <a class="icon-btn" id="top-back" href="#/" aria-label="${t('返回')}" hidden>${icon('back')}</a>
       <div style="width:26px;height:26px" id="top-logo">${logo()}</div>
       <div class="title" id="top-title">VaultCard</div>
     </header>
@@ -70,16 +71,16 @@
     const navBase = base === '/c' ? '/people' : base === '/' ? '/card' : base;
     $$('[data-route]').forEach((a) => a.classList.toggle('active', a.dataset.route === navBase));
   }
-  function setTitle(t, back) {
-    $('#top-title').textContent = t;
-    document.title = t === 'VaultCard' ? 'VaultCard · 用 Obsidian 的方式經營人脈' : t + ' · VaultCard';
+  function setTitle(title, back) {
+    $('#top-title').textContent = title;
+    document.title = title === 'VaultCard' ? t('VaultCard · 用 Obsidian 的方式經營人脈') : title + ' · VaultCard';
     const b = $('#top-back');
     b.hidden = !back; $('#top-logo').hidden = !!back;
     if (back) b.setAttribute('href', back);
   }
   function updateStat() {
     const el = $('#mini-stat'); if (!el) return;
-    el.innerHTML = `👥 ${CX.count()} 位人脈<br><span class="faint">資料只存在這台裝置</span>`;
+    el.innerHTML = t('👥 {0} 位人脈<br><span class="faint">資料只存在這台裝置</span>', CX.count());
   }
 
   /* ---------------- 路由 ---------------- */
@@ -111,16 +112,18 @@
 <section class="welcome">
   <div class="w-logo">${logo()}</div>
   <h1>VaultCard</h1>
-  <p class="lead">一張名片，就是一則 Obsidian 筆記。<br>交換名片、記下怎麼認識，用 [[連結]] 把人脈織成一張網。</p>
-  <div class="cx-actions"><a class="btn primary" href="#/card">🪪 ${CX.hasCard() ? '打開我的名片' : '建立我的名片'}</a><button class="btn" id="w-demo">👀 看範例名片</button></div>
+  <p class="lead">${t('一張名片，就是一則 Obsidian 筆記。<br>交換名片、記下怎麼認識，用 [[連結]] 把人脈織成一張網。')}</p>
+  <div class="cx-actions"><a class="btn primary" href="#/card">🪪 ${CX.hasCard() ? t('打開我的名片') : t('建立我的名片')}</a><button class="btn" id="w-demo">${t('👀 看範例名片')}</button></div>
+  <p style="margin-top:18px"><button class="btn ghost" id="w-lang">🌐 ${L('English', '中文')}</button></p>
 </section>
 <div class="how">
-  <div class="card"><div class="n">🪪</div><b>1. 做一張名片</b><span>30 秒填好，產生你的 QR Code 與分享連結。</span></div>
-  <div class="card"><div class="n">🤝</div><b>2. 掃一下就交換</b><span>對方打開連結，就能把你存成一則人脈筆記，再回傳他的名片。</span></div>
-  <div class="card"><div class="n">🕸️</div><b>3. 長出你的人脈圖譜</b><span>寫筆記、加 #標籤、用 [[名字]] 連結，最後整包匯出成 Obsidian Vault。</span></div>
+  <div class="card"><div class="n">🪪</div><b>${t('1. 做一張名片')}</b><span>${t('30 秒填好，產生你的 QR Code 與分享連結。')}</span></div>
+  <div class="card"><div class="n">🤝</div><b>${t('2. 掃一下就交換')}</b><span>${t('對方打開連結，就能把你存成一則人脈筆記，再回傳他的名片。')}</span></div>
+  <div class="card"><div class="n">🕸️</div><b>${t('3. 長出你的人脈圖譜')}</b><span>${t('寫筆記、加 #標籤、用 [[名字]] 連結，最後整包匯出成 Obsidian Vault。')}</span></div>
 </div>
-<p class="faint" style="text-align:center;font-size:13px;margin-top:28px">不用註冊、沒有伺服器。名片資料直接放在分享連結裡，人脈只存在你的裝置。</p>`;
+<p class="faint" style="text-align:center;font-size:13px;margin-top:28px">${t('不用註冊、沒有伺服器。名片資料直接放在分享連結裡，人脈只存在你的裝置。')}</p>`;
     $('#w-demo').addEventListener('click', CX.openDemo);
+    $('#w-lang').addEventListener('click', () => window.I18N.setLang(L('en', 'zh')));
   }
 
   /* ---------------- 圖譜引擎（力導向）---------------- */
@@ -259,7 +262,7 @@
         if (n !== hover) {
           hover = n;
           canvas.style.cursor = n ? (n.href ? 'pointer' : 'default') : 'grab';
-          $('#graph-hover').textContent = n ? n.label + (n.kind === 'ghost' ? '（尚未建立）' : '') : '';
+          $('#graph-hover').textContent = n ? n.label + (n.kind === 'ghost' ? t('（尚未建立）') : '') : '';
         }
       }
     }
@@ -269,7 +272,7 @@
       if (down && !down.moved && down.n) {
         const n = down.n;
         if (n.href) location.hash = n.href;
-        else if (n.kind === 'ghost') toast('📄「' + n.label + '」被提到了，但還沒存成人脈筆記');
+        else if (n.kind === 'ghost') toast(t('📄「{0}」被提到了，但還沒存成人脈筆記', n.label));
       }
       drag = null; down = null; canvas.style.cursor = 'grab';
     }
@@ -309,5 +312,6 @@
   const CX = window.Connect({ $, $$, esc, icon, toast, haptic, setTitle, makeGraph, native, setCleanup: (fn) => { cleanup = fn; } });
   shell();
   window.addEventListener('hashchange', route);
-  route();
+  // 等 App 內的原生備份檢查完再畫第一個畫面（網頁版會立刻完成）
+  CX.ready.then(route, route);
 })();
