@@ -34,9 +34,9 @@
 
   const NAV = [
     { r: '/card', label: '我的名片', short: '名片', ico: 'card' },
-    { r: '/people', label: '人脈', short: '人脈', ico: 'people' },
+    { r: '/settings', label: '設定與資料', short: '設定', ico: 'settings' },
     { r: '/network', label: '人脈圖譜', short: '圖譜', ico: 'graph' },
-    { r: '/settings', label: '設定與資料', short: '設定', ico: 'settings' }
+    { r: '/people', label: '人脈', short: '人脈', ico: 'people' }
   ];
 
   /* ---------------- 外框 ---------------- */
