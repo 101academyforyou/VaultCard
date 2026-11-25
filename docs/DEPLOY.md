@@ -1,6 +1,6 @@
 # 網頁版部署：vaultcard.onepointzeroone.org
 
-網頁版用 **GitHub Pages** 發布到 **https://vaultcard.onepointzeroone.org/**。推送到 `main` 後，`.github/workflows/pages.yml` 會把網頁檔案（含 `CNAME`）複製到 `www/` 並自動部署。
+網頁版用 **GitHub Pages** 發布到 **https://vaultcard.onepointzeroone.org/**。推送到 `main` 後，`.github/workflows/pages.yml` 會用 `scripts/build-site.mjs` 組出網站到 `_site/` 並自動部署：首頁是介紹頁（`site/`），App 在 `/app/`，隱私權政策在 `/privacy.html`。
 
 只需要做一次下面的設定。
 
@@ -50,8 +50,8 @@ nslookup vaultcard.onepointzeroone.org
 ## 網址寫在哪裡
 
 - `CNAME`：GitHub Pages 自訂網域
-- `js/config.js` 的 `VAULTCARD_SITE`：App 內分享名片時產生的連結
-- `index.html` 的 canonical / og 標籤
+- `js/config.js` 的 `VAULTCARD_SITE`：App 內分享名片時產生的連結（指向 `/app/`）
+- `index.html`（App）與 `site/index.html`（介紹頁）的 canonical / og 標籤
 
 換網域時這三個地方都要改。
 

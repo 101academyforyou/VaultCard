@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # 1. 建置：只把網頁檔案複製到 www/（不含 ios/、android/），上傳成 Pages 檔案包
+  # 1. 建置：組出介紹頁（/）＋網頁版 App（/app/），上傳成 Pages 檔案包
   build:
     runs-on: ubuntu-latest
     steps:
@@ -23,11 +23,11 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - run: node scripts/build-www.mjs
+      - run: node scripts/build-site.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: www
+          path: _site
 
   # 2. 部署：等建置完成後再發布
   deploy:

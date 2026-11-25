@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <script>
+    // 舊的名片連結（https://vaultcard.onepointzeroone.org/#/c/…）與舊版 PWA 會帶著 #/ 開頭的網址進來，轉到 App
+    (function () {
+      const go = () => { if (/^#\//.test(location.hash)) location.replace('app/' + location.hash); };
+      go(); window.addEventListener('hashchange', go);
+    })();
+  </script>
+  <title>VaultCard · 交換名片，把人脈存成筆記</title>
+  <meta name="description" content="VaultCard 是 Markdown 風格的社交名片：掃 QR 交換名片，把每個認識的人存成一則筆記，用 [[雙向連結]] 和關係圖譜看見你的人脈網路。免費、不用註冊、沒有伺服器。">
+  <link rel="canonical" href="https://vaultcard.onepointzeroone.org/">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://vaultcard.onepointzeroone.org/">
+  <meta property="og:title" content="VaultCard · 一張名片，就是一則筆記">
+  <meta property="og:description" content="掃一下就交換名片，把人脈存成筆記，用 [[連結]] 和圖譜看見你的人際網路。">
+  <meta property="og:image" content="https://vaultcard.onepointzeroone.org/app/icons/icon-512.png">
+  <meta property="og:locale" content="zh_TW">
+  <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#0f0d16">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="app/icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="app/icons/icon-192.png">
+  <style>
+    :root {
+      --bg: #0f0d16; --bg-2: #161320; --card: #1a1726; --line: #2a2538; --line-2: #3a3350;
+      --text: #ece9f5; --muted: #a39db8; --faint: #6f6987;
+      --accent: #8a5cf5; --accent-2: #b39dff; --accent-soft: rgba(138, 92, 245, .16); --gold: #facc15; --green: #4ade80;
+      --font: "Inter", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, -apple-system, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+      color-scheme: dark;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+    body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: -1;
+      background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 44px 44px; mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 75%); }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 22px; border-radius: 99px; font-weight: 700; font-size: 16px; border: 1px solid var(--line-2); background: var(--card); color: var(--text); transition: transform .15s, background .15s, border-color .15s; white-space: nowrap; cursor: pointer; font-family: inherit; }
+    .btn:hover { transform: translateY(-1px); border-color: var(--accent-2); }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 10px 30px -10px var(--accent); }
+    .btn.primary:hover { background: #7b4ff0; }
+    .btn.sm { padding: 8px 16px; font-size: 14px; }
+    .btn[aria-disabled="true"] { opacity: .6; cursor: default; transform: none; }
+    .btn svg { width: 18px; height: 18px; }
+
+    /* 導覽 */
+    header { position: sticky; top: 0; z-index: 10; background: rgba(15, 13, 22, .78); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+    header .wrap { display: flex; align-items: center; gap: 20px; height: 64px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 19px; letter-spacing: .2px; }
+    .logo img { width: 30px; height: 30px; border-radius: 8px; }
+    .logo b { color: var(--accent-2); }
+    nav.links { margin-left: auto; display: flex; gap: 26px; font-size: 15px; color: var(--muted); }
+    nav.links a:hover { color: var(--text); }
+
+    /* 主視覺 */
+    .wrap.hero { display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: center; padding-top: 72px; padding-bottom: 64px; }
+    .tag { display: inline-flex; align-items: center; gap: 8px; padding: 5px 14px; border-radius: 99px; border: 1px solid rgba(179, 157, 255, .45); color: var(--accent-2); font-size: 14px; background: var(--accent-soft); }
+    h1 { font-size: clamp(40px, 6vw, 66px); line-height: 1.12; margin: 20px 0 22px; letter-spacing: -.5px; }
+    h1 em { font-style: normal; background: linear-gradient(90deg, #c4b5fd, var(--accent) 60%, #f0abfc); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .lead { font-size: 18px; color: var(--muted); max-width: 540px; margin: 0 0 30px; }
+    .lead code { font-family: var(--mono); font-size: .9em; color: #e2a6ff; background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 5px; }
+    .cta { display: flex; gap: 12px; flex-wrap: wrap; }
+    .checks { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 18px 0 0; padding: 0; list-style: none; color: var(--faint); font-size: 14px; }
+    .checks li::before { content: "✓"; color: var(--accent-2); margin-right: 6px; font-weight: 700; }
+    .counter { display: inline-flex; align-items: center; gap: 12px; margin-top: 34px; padding: 12px 22px; border-radius: 99px; border: 1px solid var(--line-2); background: var(--bg-2); font-size: 17px; color: var(--muted); }
+    .counter b { color: var(--text); font-size: 19px; font-variant-numeric: tabular-nums; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 0 rgba(74, 222, 128, .6); animation: pulse 2s infinite; flex: none; }
+    @keyframes pulse { 70% { box-shadow: 0 0 0 10px rgba(74, 222, 128, 0); } 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); } }
+
+    /* 手機 */
+    .stage { position: relative; display: flex; justify-content: center; padding: 34px 0; border-radius: 28px; border: 1px solid var(--line); background: radial-gradient(60% 50% at 50% 45%, rgba(138, 92, 245, .35), transparent 70%), var(--bg-2); }
+    .phone { position: relative; width: min(300px, 76vw); aspect-ratio: 600 / 1304; border-radius: 44px; padding: 10px; background: #050407; box-shadow: 0 0 0 2px #2d2640, 0 0 60px -10px rgba(138, 92, 245, .7), 0 40px 80px -30px #000; }
+    .screen { position: relative; width: 100%; height: 100%; border-radius: 35px; overflow: hidden; background: #1a1a1a; }
+    .screen img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .6s; }
+    .screen img.on { opacity: 1; }
+    .dots { position: absolute; bottom: 12px; left: 0; right: 0; display: flex; justify-content: center; gap: 8px; }
+    .dots button { width: 8px; height: 8px; padding: 0; border-radius: 99px; border: none; background: var(--line-2); cursor: pointer; transition: width .3s, background .3s; }
+    .dots button.on { width: 22px; background: var(--accent-2); }
+    .spark { position: absolute; color: var(--accent-2); font-size: 18px; opacity: .8; }
+
+    /* 區塊 */
+    section { padding: 72px 0; }
+    .sec-head { text-align: center; max-width: 640px; margin: 0 auto 40px; }
+    .sec-head h2 { font-size: clamp(28px, 4vw, 38px); margin: 0 0 10px; line-height: 1.25; }
+    .sec-head p { color: var(--muted); margin: 0; font-size: 17px; }
+    .eyebrow { color: var(--accent-2); font-family: var(--mono); font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .feat { padding: 24px; border-radius: 18px; border: 1px solid var(--line); background: var(--card); transition: border-color .2s, transform .2s; }
+    .feat:hover { border-color: rgba(179, 157, 255, .5); transform: translateY(-2px); }
+    .feat .ico { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 22px; background: var(--accent-soft); margin-bottom: 14px; }
+    .feat h3 { margin: 0 0 6px; font-size: 18px; }
+    .feat p { margin: 0; color: var(--muted); font-size: 15px; }
+
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .step { text-align: center; }
+    .step .shot { width: 210px; max-width: 70%; margin: 0 auto 18px; border-radius: 26px; padding: 6px; background: #050407; box-shadow: 0 0 0 1px #2d2640, 0 20px 40px -20px #000; }
+    .step .shot img { display: block; width: 100%; border-radius: 21px; }
+    .step .n { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 800; font-size: 14px; margin-bottom: 8px; }
+    .step h3 { margin: 0 0 6px; font-size: 19px; }
+    .step p { margin: 0 auto; color: var(--muted); font-size: 15px; max-width: 300px; }
+
+    .faq { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+    .faq details { border: 1px solid var(--line); border-radius: 14px; background: var(--card); padding: 0 20px; }
+    .faq summary { cursor: pointer; padding: 18px 0; font-weight: 700; font-size: 16.5px; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::after { content: "+"; color: var(--accent-2); font-size: 22px; line-height: 1; transition: transform .2s; }
+    .faq details[open] summary::after { transform: rotate(45deg); }
+    .faq details p { margin: 0 0 18px; color: var(--muted); font-size: 15.5px; }
+
+    .band { text-align: center; padding: 56px 24px; border-radius: 28px; border: 1px solid var(--line-2); background: radial-gradient(80% 120% at 50% 0%, rgba(138, 92, 245, .35), transparent 70%), var(--bg-2); }
+    .band h2 { font-size: clamp(26px, 4vw, 36px); margin: 0 0 10px; }
+    .band p { color: var(--muted); margin: 0 0 26px; }
+    .band .cta { justify-content: center; }
+
+    footer { border-top: 1px solid var(--line); margin-top: 72px; padding: 28px 0 40px; color: var(--faint); font-size: 14px; }
+    footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+    footer a { color: var(--muted); }
+    footer a:hover { color: var(--text); }
+
+    @media (max-width: 900px) {
+      .wrap.hero { grid-template-columns: 1fr; padding-top: 40px; gap: 36px; }
+      .grid { grid-template-columns: 1fr 1fr; }
+      .steps { grid-template-columns: 1fr; gap: 40px; }
+      nav.links { display: none; }
+      header .btn { margin-left: auto; }
+    }
+    @media (max-width: 560px) {
+      .wrap { padding-left: 16px; padding-right: 16px; }
+      .grid { grid-template-columns: 1fr; }
+      .cta .btn { flex: 1 1 100%; justify-content: center; }
+      .counter { font-size: 15px; padding: 10px 16px; }
+      .counter b { font-size: 17px; }
+      section { padding: 56px 0; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <a class="logo" href="./"><img src="app/icons/icon.svg" alt=""><span>Vault<b>Card</b></span></a>
+    <nav class="links"><a href="#features">功能</a><a href="#how">怎麼用</a><a href="#faq">常見問題</a></nav>
+    <a class="btn primary sm" href="app/">開啟 App</a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <div>
+      <span class="tag">💎 一張名片，就是一則筆記</span>
+      <h1>交換名片，<br>把人脈<em>存成筆記</em>。</h1>
+      <p class="lead">名片一多，就忘了誰是誰？VaultCard 讓你掃一下 QR 就交換名片，把每個認識的人存成一則 Markdown 筆記：記下在哪裡認識、聊了什麼，用 <code>[[連結]]</code> 把人串起來，在圖譜裡看見你的人脈網路。</p>
+      <div class="cta">
+        <a class="btn primary" href="app/#/card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>免費建立我的名片</a>
+        <a class="btn" id="appstore" href="#" aria-disabled="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.2-.8s1.9.8 3.2.8c1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.6-1-2.6-3.9zM14 5.4c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg><span id="appstore-text">App Store 即將上架</span></a>
+      </div>
+      <ul class="checks"><li>不用註冊</li><li>掃 QR 就交換</li><li>免費、無廣告</li><li>資料只在你手機上</li></ul>
+      <div class="counter" id="counter"><span class="dot"></span><span id="counter-text">剛上線，歡迎成為第一批使用者</span></div>
+    </div>
+    <div class="stage">
+      <span class="spark" style="left:9%;top:8%">✦</span><span class="spark" style="right:10%;bottom:12%;color:var(--gold)">✦</span>
+      <div class="phone">
+        <div class="screen" id="screen">
+          <img class="on" src="img/card.webp" alt="我的名片：預覽與 QR Code">
+          <img src="img/receive.webp" alt="收到名片，存成人脈筆記" loading="lazy">
+          <img src="img/note.webp" alt="人脈筆記與反向連結" loading="lazy">
+          <img src="img/graph.webp" alt="人脈圖譜" loading="lazy">
+        </div>
+        <div class="dots" id="dots"></div>
+      </div>
+    </div>
+  </div>
+
+  <section id="features">
+    <div class="wrap">
+      <div class="sec-head"><div class="eyebrow">Features</div><h2>名片、筆記、圖譜，一次到位</h2><p>喜歡做筆記的人，也該用筆記的方式經營人脈。</p></div>
+      <div class="grid">
+        <div class="feat"><div class="ico">🪪</div><h3>30 秒做好名片</h3><p>名字、職稱、自介、標籤，加上電話、Email、LINE、IG、Threads、LinkedIn、GitHub，即時預覽、自動產生 QR Code。</p></div>
+        <div class="feat"><div class="ico">🤝</div><h3>掃一下就交換</h3><p>對方用手機相機掃 QR 就能看到你的名片，不用裝 App。存進人脈後一鍵回傳他的名片。</p></div>
+        <div class="feat"><div class="ico">📄</div><h3>每個人都是一則筆記</h3><p>記下在哪裡、哪天認識，寫下聊了什麼。支援 Markdown、<code style="font-family:var(--mono)">#標籤</code>、Callout。</p></div>
+        <div class="feat"><div class="ico">🔗</div><h3>雙向連結與反向連結</h3><p>在筆記裡寫 [[名字]] 把人串起來，看誰提到了誰、誰是同一場活動認識的。</p></div>
+        <div class="feat"><div class="ico">🕸️</div><h3>人脈圖譜</h3><p>以你為中心，人脈、活動、標籤連成一張可拖曳、縮放的網路圖，誰是關鍵人物一眼就懂。</p></div>
+        <div class="feat"><div class="ico">💎</div><h3>匯出成 Vault</h3><p>一鍵下載 .zip：每個人一則 .md 筆記（含屬性），直接用 Obsidian 等 Markdown 筆記軟體開啟。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="wrap">
+      <div class="sec-head"><div class="eyebrow">How it works</div><h2>三步驟，人脈自己長出來</h2></div>
+      <div class="steps">
+        <div class="step"><div class="shot"><img src="img/card.webp" alt="" loading="lazy"></div><div class="n">1</div><h3>做一張名片</h3><p>填好資料，App 自動產生你的 QR Code 和分享連結。</p></div>
+        <div class="step"><div class="shot"><img src="img/receive.webp" alt="" loading="lazy"></div><div class="n">2</div><h3>掃 QR 交換</h3><p>記下在哪裡認識，存成人脈筆記，再回傳你的名片。</p></div>
+        <div class="step"><div class="shot"><img src="img/graph.webp" alt="" loading="lazy"></div><div class="n">3</div><h3>看見人脈網路</h3><p>寫筆記、加連結，圖譜會慢慢長成你的人際地圖。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <div class="sec-head"><div class="eyebrow">FAQ</div><h2>常見問題</h2></div>
+      <div class="faq">
+        <details open><summary>要付費或註冊嗎？</summary><p>不用。VaultCard 完全免費、沒有廣告，也不需要註冊帳號，打開就能用。</p></details>
+        <details><summary>我的資料存在哪裡？安全嗎？</summary><p>VaultCard 沒有伺服器。你的名片和人脈筆記只存在你自己的手機或瀏覽器裡，我們看不到也不會蒐集。分享名片時，名片內容是直接放在連結裡傳給對方的，所以只要填你願意公開的資訊就好。</p></details>
+        <details><summary>對方沒有裝 VaultCard 也能交換嗎？</summary><p>可以。對方用手機相機掃你的 QR Code，會在瀏覽器打開你的名片，可以存進通訊錄（vCard），也可以直接用網頁版建立自己的名片回傳給你。</p></details>
+        <details><summary>一定要會用 Obsidian 嗎？</summary><p>不用。VaultCard 本身就能寫筆記、看圖譜。如果你有在用 Obsidian 或其他 Markdown 筆記軟體，可以把整個人脈匯出成 .zip，直接放進你的筆記庫。</p></details>
+        <details><summary>換手機時資料會不見嗎？</summary><p>資料只存在裝置上，換手機前請到 App 的「設定與資料」下載備份檔，在新手機用「還原備份」匯入即可。</p></details>
+        <details><summary>有網頁版和 App 嗎？</summary><p>都有。網頁版現在就能用（右上角「開啟 App」），iPhone App 即將在 App Store 上架。</p></details>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="band">
+      <h2>下一場活動，帶一張會記事的名片</h2>
+      <p>30 秒做好你的名片，現在就開始。</p>
+      <div class="cta"><a class="btn primary" href="app/#/card">免費建立我的名片</a><a class="btn" href="app/#/welcome">先看看怎麼用</a></div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 VaultCard · 與 Obsidian（Dynalist Inc.）無隸屬關係</span>
+    <span><a href="privacy.html">隱私權政策</a> · <a href="app/">開啟 App</a></span>
+  </div>
+</footer>
+
+<script>
+  // 手機畫面輪播
+  (function () {
+    const imgs = Array.from(document.querySelectorAll('#screen img'));
+    const dots = document.getElementById('dots');
+    let i = 0, timer = 0;
+    const show = (n) => { i = (n + imgs.length) % imgs.length; imgs.forEach((im, k) => im.classList.toggle('on', k === i)); Array.from(dots.children).forEach((d, k) => d.classList.toggle('on', k === i)); };
+    imgs.forEach((im, k) => { const b = document.createElement('button'); b.setAttribute('aria-label', im.alt); b.addEventListener('click', () => { show(k); restart(); }); dots.appendChild(b); });
+    const restart = () => { clearInterval(timer); if (!matchMedia('(prefers-reduced-motion: reduce)').matches) timer = setInterval(() => show(i + 1), 3500); };
+    show(0); restart();
+  })();
+
+  // 使用人數與 App Store 連結（手動維護在 stats.json）
+  fetch('stats.json', { cache: 'no-store' }).then((r) => r.json()).then((s) => {
+    const users = Number(s.users) || 0;
+    if (users > 0) {
+      const t = document.getElementById('counter-text');
+      t.textContent = '';
+      const b = document.createElement('b'); b.textContent = users.toLocaleString('zh-TW');
+      t.append(b, ' 人已經在用 VaultCard 交換名片');
+    }
+    if (typeof s.appStoreUrl === 'string' && /^https:\/\/apps\.apple\.com\//.test(s.appStoreUrl)) {
+      const a = document.getElementById('appstore');
+      a.href = s.appStoreUrl; a.removeAttribute('aria-disabled'); a.target = '_blank'; a.rel = 'noopener';
+      document.getElementById('appstore-text').textContent = '在 App Store 下載';
+    }
+  }).catch(() => {});
+  document.getElementById('appstore').addEventListener('click', (e) => { if (e.currentTarget.getAttribute('aria-disabled') === 'true') e.preventDefault(); });
+</script>
+</body>
+</html>
